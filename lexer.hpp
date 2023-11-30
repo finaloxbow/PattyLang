@@ -1,3 +1,6 @@
+#ifndef LEXER_HPP
+#define LEXER_HPP
+
 #include <string>
 #include <vector>
 #include <iostream>
@@ -39,3 +42,5 @@ private:
     string program;
     vector<std::pair<std::regex, TokenType>> regexes;
 };
+
+#endif

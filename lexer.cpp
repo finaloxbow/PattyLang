@@ -36,7 +36,7 @@ vector<Lexer::Token> Lexer::tokenize_program()
         }
 
         if(!matched)
-            throw string("Invalid syntax detected.");
+            throw std::runtime_error("Invalid syntax detected.");
     }
     
     return tokens;
