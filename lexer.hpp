@@ -1,5 +1,6 @@
 #include <variant>
 #include <string>
+#include <iostream>
 
 #ifndef LEXER_HPP
 #define LEXER_HPP
@@ -15,7 +16,6 @@ enum class TokenType {
     close_square,
     colon,
     dot,
-    end,
     equals,
     minus,
     open_paren,
@@ -23,6 +23,8 @@ enum class TokenType {
     plus,
     semicolon,
     slash,
+    open_curly,
+    close_curly,
 };
 
 struct Token {
@@ -31,6 +33,8 @@ struct Token {
 
     Token(TokenType type, std::string data);
     Token(TokenType type, uint64_t data);
+
+    friend std::ostream& operator<<(std::ostream& os, const Token& token);
 };
 
 class Lexer {
@@ -39,6 +43,8 @@ private:
 public:
     Lexer(std::string& filepath);
 
+    bool empty();
+    void skip_whitespace();
     Token consume_next();
 };
 
