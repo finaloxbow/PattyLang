@@ -1,73 +1,51 @@
 #include "lexer.hpp"
 
-#include <fstream>
 #include <sstream>
+#include <fstream>
+#include <vector>
 #include <regex>
-#include <stdexcept>
 
-Lexer::Lexer(string& file_path){
-    std::ifstream input_stream(file_path);
+using std::vector;
+using std::regex;
+using std::pair;
+using std::string;
+
+vector<pair<regex, TokenType>> regexes
+{
+    {regex("^([0-9]+)", std::regex::extended), TokenType::uint64},
+    {regex("^([a-zA-Z]+)", std::regex::extended), TokenType::id},
+    {regex("^\"([a-zA-Z]*)\"", std::regex::extended), TokenType::quoted_str},
+    {regex("^([*])", std::regex::extended), TokenType::asterisk},
+    {regex("^([@])", std::regex::extended), TokenType::at},
+    {regex("^([^])", std::regex::extended), TokenType::carat},
+    {regex("^([\\)])", std::regex::extended), TokenType::close_paren},
+    {regex("^([\\]])", std::regex::extended), TokenType::close_square},
+    {regex("^([:])", std::regex::extended), TokenType::colon},
+    {regex("^([.])", std::regex::extended), TokenType::dot},
+    {regex("^([=])", std::regex::extended), TokenType::equals},
+    {regex("^([-])", std::regex::extended), TokenType::minus},
+    {regex("^([\\(])", std::regex::extended), TokenType::open_paren},
+    {regex("^([\\[])", std::regex::extended), TokenType::open_square},
+    {regex("^([+])", std::regex::extended), TokenType::plus},
+    {regex("^([;])", std::regex::extended), TokenType::semicolon},
+    {regex("^([/])", std::regex::extended), TokenType::slash},
+};
+
+Token::Token(TokenType type, std::string data)
+: type(type), data(data) {}
+
+Token::Token(TokenType type, uint64_t data)
+: type(type), data(data) {}
+
+Lexer::Lexer(string &filepath)
+{
+    std::ifstream input_stream(filepath);
     std::stringstream buffer;
     buffer << input_stream.rdbuf();
-
-    program = buffer.str();
-
-    regexes.push_back({std::regex("^(-?[0-9]+)[ ]*", std::regex::extended), TokenType::TOK_INT64});
+    this->program = buffer.str();
 }
 
-vector<Lexer::Token> Lexer::tokenize_program()
+Token Lexer::consume_next()
 {
-    program = std::regex_replace(program, std::regex("\n"), " ");
-    
-    vector<Token> tokens;
-
-    while(program.size() > 0){
-        std::smatch matches;
-        bool matched = false;
-
-        for(int i = 0; i < regexes.size(); i++){
-            if(std::regex_search(program, matches, regexes[i].first)){
-                string data = matches[1].str();
-                tokens.push_back(Token::construct_token(regexes[i].second, data));
-                program = matches.suffix().str();
-                matched = true;
-                break;
-            }
-        }
-
-        if(!matched)
-            throw std::runtime_error("Invalid syntax detected.");
-    }
-    
-    return tokens;
-}
-
-Lexer::Token Lexer::Token::construct_token(TokenType type, string &data)
-{
-    Token tok;
-    tok.type = type;
-
-    switch(type){
-        case TOK_INT64:
-            tok.data.val = std::stol(data);
-            break;
-        default:
-            throw std::invalid_argument("Invalid token type.");
-            break;
-    }
-
-    return tok;
-}
-
-std::ostream& operator<<(std::ostream& os, const Lexer::Token& tok){
-    switch(tok.type){
-        case Lexer::TokenType::TOK_INT64:
-            os << "TOK_INT64(" << tok.data.val << ")";
-            break;
-        default:
-            os << "INVALID_TOK";
-            break;
-    }
-    
-    return os;
+    //this is where matching happens
 }

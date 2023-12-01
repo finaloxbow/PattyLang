@@ -1,46 +1,45 @@
+#include <variant>
+#include <string>
+
 #ifndef LEXER_HPP
 #define LEXER_HPP
 
-#include <string>
-#include <vector>
-#include <iostream>
-#include <stdexcept>
-#include <regex>
+enum class TokenType {
+    uint64,
+    id,
+    quoted_str,
+    asterisk,
+    at,
+    carat,
+    close_paren,
+    close_square,
+    colon,
+    dot,
+    end,
+    equals,
+    minus,
+    open_paren,
+    open_square,
+    plus,
+    semicolon,
+    slash,
+};
 
-#include "ast.hpp"
+struct Token {
+    TokenType type;
+    std::variant<std::string, uint64_t> data;
 
-using std::string;
-using std::vector;
+    Token(TokenType type, std::string data);
+    Token(TokenType type, uint64_t data);
+};
 
 class Lexer {
-public:
-
-    enum TokenType {
-        TOK_INT64,
-    };
-
-    //Token with optional data
-    struct Token{
-        
-        TokenType type;
-
-        union Data {
-            uint64_t val;
-        } data;
-
-        static Token construct_token(TokenType type, string& data);
-
-        friend std::ostream& operator<<(std::ostream& os, const Token& tok);
-
-    };
-
-    Lexer(string& file_path);
-
-    vector<Token> tokenize_program();
-
 private:
-    string program;
-    vector<std::pair<std::regex, TokenType>> regexes;
+    std::string program;
+public:
+    Lexer(std::string& filepath);
+
+    Token consume_next();
 };
 
 #endif
