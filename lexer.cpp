@@ -35,14 +35,8 @@ vector<pair<regex, TokenType>> regexes
     {regex("^(\\})", std::regex::extended), TokenType::close_curly},
 };
 
-Token::Token(TokenType type, std::string data)
-: type(type), data(data) {}
-
-Token::Token(TokenType type, uint64_t data)
-: type(type), data(data) {}
-
-std::ostream& operator<<(std::ostream& os, const Token& token){
-    switch(token.type){
+std::ostream& operator<<(std::ostream& os, const TokenType& token){
+    switch(token){
         case TokenType::uint64:
             os << "uint64";
             break;
@@ -104,6 +98,19 @@ std::ostream& operator<<(std::ostream& os, const Token& token){
             throw std::runtime_error("Printing token failed. Probably missed an enum in the switch.");
             break;
     }
+
+    return os;
+}
+
+Token::Token(TokenType type, std::string data)
+: type(type), data(data) {}
+
+Token::Token(TokenType type, uint64_t data)
+: type(type), data(data) {}
+
+std::ostream& operator<<(std::ostream& os, const Token& token){
+
+    os << token.type;
 
     if(token.type == TokenType::uint64){
         if(std::holds_alternative<uint64_t>(token.data))

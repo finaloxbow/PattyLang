@@ -1,14 +1,16 @@
 #include <string>
 #include <iostream>
-#include "lexer.hpp"
+#include "parser.hpp"
 
 int main(){
     
     std::string filepath = "./test.ptl";
-    Lexer lexer(filepath);
+    Parser parser(filepath);
 
-    while(!lexer.empty())
-        std::cout << lexer.consume_next() << "\n";
+    std::vector<Expr*> program = parser.parse_program();
+
+    for(auto expr : program)
+        std::cout << expr->stringify() << "\n";
 
     return 0;
 }

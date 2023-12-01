@@ -25,7 +25,10 @@ enum class TokenType {
     slash,
     open_curly,
     close_curly,
+    DEFAULT,
 };
+
+std::ostream& operator<<(std::ostream& os, const TokenType& token);
 
 struct Token {
     TokenType type;
